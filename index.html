@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="bs/css/bootstrap.css">
+  <link rel="stylesheet" href="bs/css/mdb.css">
+  <link rel="stylesheet" href="bs/css/style.css">
+  <title>V</title>
+
+  <style>
+
+    ::-webkit-scrollbar {
+      display: none;
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+    }
+
+    video{
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+    }
+
+
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      background-color: #0d0d0d;
+    }
+    .interaction{
+      position: relative;
+      height: 80vh;
+      z-index: 3; /* Highest z-index for the canvas containing circles */
+      pointer-events: auto;
+    }
+
+    #hero {
+      margin: 0;
+      padding: 0;
+      position: relative;
+      background: rgba(0,0,0,0%);
+      z-index: 1;
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    #hero-text {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      text-align: center;
+      z-index: 2;
+      background: rgba(0,0,0,0%);
+      transform: scale(1.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    #hero-text > div {
+      background: rgba(0, 0, 0, 0);
+    }
+
+  </style>
+
+
+</head>
+
+<body>
+
+
+<div class="interaction">
+  <canvas id="hero"></canvas>
+</div>
+  <div id="hero-text">
+    <div>
+      <video width="100%" autoplay loop muted>
+        <source src="V.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+
+
+<script>
+  const cvs = document.querySelector("canvas");
+  const c = cvs.getContext("2d");
+
+  cvs.width = window.innerWidth;
+  cvs.height = window.innerHeight;
+
+  window.addEventListener("resize", function () {
+    cvs.width = window.innerWidth;
+    cvs.height = window.innerHeight;
+  });
+
+  let mouse = {
+    x: undefined,
+    y: undefined,
+  };
+
+  window.addEventListener("mousemove", function (e) {
+    mouse.x = e.x;
+    mouse.y = e.y;
+  });
+
+  window.addEventListener("touchstart", function (e) {
+    mouse.x = e.touches[0].clientX;
+    mouse.y = e.touches[0].clientY;
+  });
+
+  window.addEventListener("touchmove", function (e) {
+    mouse.x = e.touches[0].clientX;
+    mouse.y = e.touches[0].clientY;
+  });
+
+  class Circle {
+    constructor(x, y, dx, dy, radius) {
+      this.x = x;
+      this.y = y;
+      this.dx = dx;
+      this.dy = dy;
+      this.radius = radius;
+      this.minRadius = radius;
+      this.maxRadius = radius * 3;
+      this.hovered = false;
+
+      let colorArray = ["rgb(105,105,105)", "rgba(199,199,199,0.72)"];
+
+      this.color = colorArray[Math.floor(Math.random() * colorArray.length)];
+    }
+
+    draw = () => {
+      c.globalAlpha = this.hovered ? 1 : 0; // Set opacity based on hover state
+
+      c.beginPath();
+      c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+      c.fillStyle = this.color;
+      c.fill();
+
+      if (this.hovered && this.radius < this.maxRadius) {
+        this.radius += 1;
+      } else if (!this.hovered && this.radius > this.minRadius) {
+        this.radius -= 1;
+      }
+
+      this.update();
+
+      c.globalAlpha = 1; // Reset opacity to default
+    };
+
+
+  update = () => {
+      if (this.x + this.radius >= window.innerWidth || this.x - this.radius <= 0) {
+        this.dx = -this.dx;
+      }
+
+      if (this.y + this.radius >= window.innerHeight || this.y - this.radius <= 0) {
+        this.dy = -this.dy;
+      }
+
+      this.x += this.dx;
+      this.y += this.dy;
+    };
+  }
+
+  let circleArray = [];
+
+  for (let i = 0; i < 100; i++) {
+    let radius = Math.random() * 5 + 2;
+    let x = Math.random() * window.innerWidth;
+    let dx = (Math.random() - 0.5) * 1;
+    let y = Math.random() * window.innerHeight;
+    let dy = (Math.random() - 0.5) * 1;
+    circleArray.push(new Circle(x, y, dx, dy, radius));
+  }
+
+  function animate() {
+    requestAnimationFrame(animate);
+    c.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+    circleArray.forEach(circle => {
+      circle.hovered = Math.abs(mouse.x - circle.x) < 80 && Math.abs(mouse.y - circle.y) < 80;
+      circle.draw();
+    });
+  }
+
+  animate();
+
+</script>
+
+<!-- Start of ChatBot (www.chatbot.com) code -->
+<script type="text/javascript">
+  window.__be = window.__be || {};
+  window.__be.id = "6575ba8085fa9c00076d25bd";
+  (function() {
+    var be = document.createElement('script'); be.type = 'text/javascript'; be.async = true;
+    be.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'cdn.chatbot.com/widget/plugin.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(be, s);
+  })();
+</script>
+<noscript>You need to <a href="https://www.chatbot.com/help/chat-widget/enable-javascript-in-your-browser/" rel="noopener nofollow">enable JavaScript</a> in order to use the AI chatbot tool powered by <a href="https://www.chatbot.com/" rel="noopener nofollow" target="_blank">ChatBot</a></noscript>
+<!-- End of ChatBot code -->
+
+<script src="bs/js/jquery.js"></script>
+<script src="bs/js/popper.js"></script>
+<script src="bs/js/bootstrap.js"></script>
+<script src="bs/js/mdb.js"></script>
+
+</body>
+</html>
+
